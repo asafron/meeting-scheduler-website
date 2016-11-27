@@ -1,9 +1,13 @@
+var DEBUG = true;
+var API_Base_URL = DEBUG ? "http://localhost:4000" : "http://35.156.9.219";
+
 var allMeetings = [];
 
 var user_details = {
     name: "",
     email: "",
     phone: "",
+    school: "",
     day: 0,
     month: 0,
     year: 0,
@@ -33,7 +37,7 @@ function bar_progress(progress_line_object, direction) {
 
 function getAvailableMeetingsTime(callback) {
     $.ajax({
-        url: "http://35.156.9.219/ws/meetings/getAvailableMeetings",
+        url: API_Base_URL + "/ws/meetings/getAvailableMeetings",
         type: 'GET',
         success: function(res) {
             callback(res);
@@ -43,7 +47,7 @@ function getAvailableMeetingsTime(callback) {
 
 function scheduleMeeting(callback) {
     $.ajax({
-        url: "http://35.156.9.219/ws/meetings/schedule",
+        url: API_Base_URL + "/ws/meetings/schedule",
         type: 'POST',
         data: JSON.stringify({
             day: user_details.day,
@@ -53,7 +57,8 @@ function scheduleMeeting(callback) {
             end_time: user_details.end_time,
             name: user_details.name,
             email: user_details.email,
-            phone: user_details.phone
+            phone: user_details.phone,
+            school: user_details.school
         }),
         success: function(res) {
             callback(res);
@@ -68,15 +73,20 @@ function displayAvailableHours(selectedDate) {
     var availableHoursDiv = $("#available-hours");
     availableHoursDiv.empty();
 
+    var startTimeArray = [];
     var availableHours = [];
     var currentSelectedDate = selectedDate;
     for (var i = 0; i < allMeetings.length; i++) {
         var mtg = allMeetings[i];
         var mtgDate = new Date(mtg["year"], mtg["month"] - 1, mtg["day"]);
         if (mtgDate.toDateString() === currentSelectedDate.toDateString()) {
+            if ($.inArray(mtg["start_time"], startTimeArray) > -1) {
+                continue;
+            }
+            startTimeArray.push(mtg["start_time"]);
             if (availableHours.length === 0) {
                 user_details.start_time = mtg["start_time"];
-                user_details.end_time = user_details.start_time + 30;
+                user_details.end_time = user_details.start_time + 10;
                 availableHours.push("<div data-start-time='" + mtg["start_time"] + "' class='selected-hour'>" + minutesToHourString(mtg["start_time"]) + "</div>");
             } else {
                 availableHours.push("<div data-start-time='" + mtg["start_time"] + "' class='available-hour'>" + minutesToHourString(mtg["start_time"]) + "</div>");
@@ -154,10 +164,12 @@ jQuery(document).ready(function() {
                 user_details.name = $("#f1-full-name").val();
                 user_details.email = $("#f1-email").val();
                 user_details.phone = $("#f1-phone").val();
+                user_details.school = $("#f1-school").val();
             } else if (current_step_id === "f1-step-2") {
                 $("#confirm-name").text(user_details.name);
                 $("#confirm-email").text(user_details.email);
                 $("#confirm-phone").text(user_details.phone);
+                $("#confirm-school").text(user_details.school);
 
                 var dateString = "" + user_details.day + "/" + user_details.month + "/" + user_details.year;
                 dateString = dateString + "   " + minutesToHourString(user_details.start_time);
@@ -237,7 +249,7 @@ jQuery(document).ready(function() {
             $(this).removeClass("available-hour");
 
             user_details.start_time = parseInt($(this).attr("data-start-time"));
-            user_details.end_time = user_details.start_time + 30;
+            user_details.end_time = user_details.start_time + 10;
         }
     });
 
