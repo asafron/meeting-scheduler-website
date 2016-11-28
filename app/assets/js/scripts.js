@@ -1,4 +1,4 @@
-var DEBUG = true;
+var DEBUG = false;
 var API_Base_URL = DEBUG ? "http://localhost:4000" : "http://35.156.9.219";
 
 var allMeetings = [];
