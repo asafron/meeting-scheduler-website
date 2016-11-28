@@ -127,6 +127,22 @@ function minutesToHourString(time) {
     return hours + ":" + minutes;
 }
 
+function validateName(name) {
+    return name.length > 0;
+}
+
+function validateEmail(email) {
+    return email.length > 0;
+}
+
+function validatePhone(phone) {
+    return /^\d+$/.test(phone);
+}
+
+function validateSchool(school) {
+    return school.length > 0;
+}
+
 jQuery(document).ready(function() {
 
     /*
@@ -156,7 +172,24 @@ jQuery(document).ready(function() {
     			$(this).removeClass('input-error');
     		}
     	});
-    	// fields validation
+
+        if (!validateName($("#f1-full-name").val())) {
+            $("#f1-full-name").addClass('input-error');
+            return;
+        }
+        if (!validateEmail($("#f1-email").val())) {
+            $("#f1-email").addClass('input-error');
+            return;
+        }
+        if (!validatePhone($("#f1-phone").val())) {
+            $("#f1-phone").addClass('input-error');
+            return;
+        }
+        if (!validateSchool($("#f1-school").val())) {
+            $("#f1-school").addClass('input-error');
+            return;
+        }
+        // fields validation
     	
     	if( next_step ) {
             var current_step_id = $(current_active_step).attr("id");
