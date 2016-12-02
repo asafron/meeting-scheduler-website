@@ -16,30 +16,30 @@ var user_details = {
 };
 
 function scroll_to_class(element_class, removed_height) {
-	var scroll_to = $(element_class).offset().top - removed_height;
-	if($(window).scrollTop() != scroll_to) {
-		$('html, body').stop().animate({scrollTop: scroll_to}, 0);
-	}
+    var scroll_to = $(element_class).offset().top - removed_height;
+    if ($(window).scrollTop() != scroll_to) {
+        $('html, body').stop().animate({scrollTop: scroll_to}, 0);
+    }
 }
 
 function bar_progress(progress_line_object, direction) {
-	var number_of_steps = progress_line_object.data('number-of-steps');
-	var now_value = progress_line_object.data('now-value');
-	var new_value = 0;
-	if(direction == 'right') {
-		new_value = now_value - ( 100 / number_of_steps );
-	}
-	else if(direction == 'left') {
-		new_value = now_value + ( 100 / number_of_steps );
-	}
-	progress_line_object.attr('style', 'width: ' + new_value + '%;').data('now-value', new_value);
+    var number_of_steps = progress_line_object.data('number-of-steps');
+    var now_value = progress_line_object.data('now-value');
+    var new_value = 0;
+    if (direction == 'right') {
+        new_value = now_value - ( 100 / number_of_steps );
+    }
+    else if (direction == 'left') {
+        new_value = now_value + ( 100 / number_of_steps );
+    }
+    progress_line_object.attr('style', 'width: ' + new_value + '%;').data('now-value', new_value);
 }
 
 function getAvailableMeetingsTime(callback) {
     $.ajax({
         url: API_Base_URL + "/ws/meetings/getAvailableMeetings",
         type: 'GET',
-        success: function(res) {
+        success: function (res) {
             callback(res);
         }
     });
@@ -60,10 +60,10 @@ function scheduleMeeting(callback) {
             phone: user_details.phone,
             school: user_details.school
         }),
-        success: function(res) {
+        success: function (res) {
             callback(res);
         },
-        error: function(res) {
+        error: function (res) {
             callback(res.responseJSON);
         }
     });
@@ -143,35 +143,35 @@ function validateSchool(school) {
     return school.length > 0;
 }
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 
     /*
-        Form
-    */
+     Form
+     */
     $('.f1 fieldset:first').fadeIn('slow');
-    
-    $('.f1 input[type="text"], .f1 input[type="tel"], .f1 input[type="email"]').on('focus', function() {
-    	$(this).removeClass('input-error');
+
+    $('.f1 input[type="text"], .f1 input[type="tel"], .f1 input[type="email"]').on('focus', function () {
+        $(this).removeClass('input-error');
     });
-    
+
     // next step
-    $('.f1 .btn-next').on('click', function() {
-    	var parent_fieldset = $(this).parents('fieldset');
-    	var next_step = true;
-    	// navigation steps / progress steps
-    	var current_active_step = $(this).parents('.f1').find('.f1-step.active');
-    	var progress_line = $(this).parents('.f1').find('.f1-progress-line');
-    	
-    	// fields validation
-    	parent_fieldset.find('input[type="text"], input[type="email"], input[type="tel"]').each(function() {
-    		if( $(this).val() == "" ) {
-    			$(this).addClass('input-error');
-    			next_step = false;
-    		}
-    		else {
-    			$(this).removeClass('input-error');
-    		}
-    	});
+    $('.f1 .btn-next').on('click', function () {
+        var parent_fieldset = $(this).parents('fieldset');
+        var next_step = true;
+        // navigation steps / progress steps
+        var current_active_step = $(this).parents('.f1').find('.f1-step.active');
+        var progress_line = $(this).parents('.f1').find('.f1-progress-line');
+
+        // fields validation
+        parent_fieldset.find('input[type="text"], input[type="email"], input[type="tel"]').each(function () {
+            if ($(this).val() == "") {
+                $(this).addClass('input-error');
+                next_step = false;
+            }
+            else {
+                $(this).removeClass('input-error');
+            }
+        });
 
         if (!validateName($("#f1-full-name").val())) {
             $("#f1-full-name").addClass('input-error');
@@ -190,8 +190,8 @@ jQuery(document).ready(function() {
             return;
         }
         // fields validation
-    	
-    	if( next_step ) {
+
+        if (next_step) {
             var current_step_id = $(current_active_step).attr("id");
             if (current_step_id === "f1-step-1") {
                 user_details.name = $("#f1-full-name").val();
@@ -211,54 +211,60 @@ jQuery(document).ready(function() {
 
             }
 
-    		parent_fieldset.fadeOut(400, function() {
-    			// change icons
-    			current_active_step.removeClass('active').addClass('activated').prev().addClass('active');
-    			// progress bar
-    			bar_progress(progress_line, 'right');
-    			// show next step
-	    		$(this).next().fadeIn();
-	    		// scroll window to beginning of the form
-    			scroll_to_class( $('.f1'), 20 );
-	    	});
-    	}
-    	
+            parent_fieldset.fadeOut(400, function () {
+                // change icons
+                current_active_step.removeClass('active').addClass('activated').prev().addClass('active');
+                // progress bar
+                bar_progress(progress_line, 'right');
+                // show next step
+                $(this).next().fadeIn();
+                // scroll window to beginning of the form
+                scroll_to_class($('.f1'), 20);
+            });
+        }
+
     });
-    
+
     // previous step
-    $('.f1 .btn-previous').on('click', function() {
-    	// navigation steps / progress steps
-    	var current_active_step = $(this).parents('.f1').find('.f1-step.active');
-    	var progress_line = $(this).parents('.f1').find('.f1-progress-line');
-    	
-    	$(this).parents('fieldset').fadeOut(400, function() {
-    		// change icons
-    		current_active_step.removeClass('active').next().removeClass('activated').addClass('active');
-    		// progress bar
-    		bar_progress(progress_line, 'left');
-    		// show previous step
-    		$(this).prev().fadeIn();
-    		// scroll window to beginning of the form
-			scroll_to_class( $('.f1'), 20 );
-    	});
+    $('.f1 .btn-previous').on('click', function () {
+        // navigation steps / progress steps
+        var current_active_step = $(this).parents('.f1').find('.f1-step.active');
+        var progress_line = $(this).parents('.f1').find('.f1-progress-line');
+
+        $(this).parents('fieldset').fadeOut(400, function () {
+            // change icons
+            current_active_step.removeClass('active').next().removeClass('activated').addClass('active');
+            // progress bar
+            bar_progress(progress_line, 'left');
+            // show previous step
+            $(this).prev().fadeIn();
+            // scroll window to beginning of the form
+            scroll_to_class($('.f1'), 20);
+        });
     });
-    
+
     // submit
-    $('.f1').on('submit', function(e) {
+    $('.f1').on('submit', function (e) {
 
         e.preventDefault();
-    	
-    	// fields validation
-    	$(this).find('input[type="text"], input[type="tel"], input[type="email"], textarea').each(function() {
-    		if( $(this).val() == "" ) {
-    			e.preventDefault();
-    			$(this).addClass('input-error');
-    		}
-    		else {
-    			$(this).removeClass('input-error');
-    		}
-    	});
-    	// fields validation
+
+        // fields validation
+        $(this).find('input[type="text"], input[type="tel"], input[type="email"], textarea').each(function () {
+            if ($(this).val() == "") {
+                e.preventDefault();
+                $(this).addClass('input-error');
+            }
+            else {
+                $(this).removeClass('input-error');
+            }
+        });
+        if (!$("#confirm-checkbox").is(':checked')) {
+            $("#confirm-checkbox-div").css("border", "1px solid red");
+            return;
+        } else {
+            $("#confirm-checkbox-div").css("border", "");
+        }
+        // fields validation
 
         scheduleMeeting(function (res) {
             if (res["success"] === true) {
@@ -271,7 +277,7 @@ jQuery(document).ready(function() {
     });
 
     // handle clicks on available hours
-    $("#available-hours").on('click', '.available-hour, .selected-hour', function() {
+    $("#available-hours").on('click', '.available-hour, .selected-hour', function () {
         if ($(this).hasClass("available-hour")) {
             $(".selected-hour").each(function () {
                 $(this).removeClass("selected-hour");
@@ -303,7 +309,7 @@ jQuery(document).ready(function() {
         // date picker
         var dpOpts = {
             numberOfMonths: 1,
-            beforeShowDay: function(date) {
+            beforeShowDay: function (date) {
                 var dayAvailable = false;
                 for (var j = 0; j < allAvailableDates.length; j++) {
                     if (date >= allAvailableDates[j] && date <= allAvailableDates[j]) {
@@ -316,9 +322,9 @@ jQuery(document).ready(function() {
             defaultDate: allAvailableDates[0],
             onSelect: function (dateText, inst) {
                 var date = $(this).datepicker('getDate'),
-                    day  = date.getDate(),
+                    day = date.getDate(),
                     month = date.getMonth(),
-                    year =  date.getFullYear();
+                    year = date.getFullYear();
 
                 user_details.day = day;
                 user_details.month = month + 1;
@@ -335,5 +341,13 @@ jQuery(document).ready(function() {
         user_details.month = allAvailableDates[0].getMonth() + 1;
         user_details.year = allAvailableDates[0].getFullYear();
     });
-    
+
+    // disable enter for form
+    $(document).keypress(
+        function (event) {
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        });
+
 });
