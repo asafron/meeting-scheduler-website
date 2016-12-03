@@ -39,7 +39,7 @@ function createMeetingsTable(meetings) {
     var tableDiv = $("#meetings-details");
     tableDiv.empty();
 
-    var table = "<table class='table meetings-table'>" +
+    var table = "<table id='meetings-table' class='table meetings-table'><thead>" +
             "<tr class='active'>" +
             "<td class='meetings-table-content'>מראיין</td>" +
         "<td class='meetings-table-content'>תאריך</td>" +
@@ -49,7 +49,7 @@ function createMeetingsTable(meetings) {
         "<td class='meetings-table-content'>טלפון</td>" +
         "<td class='meetings-table-content'>בית ספר יסודי</td>" +
         "<td class='meetings-table-content'>זמן עדכון אחרון</td>" +
-        "</tr>";
+        "</tr></thead><tbody>";
 
     for (var i = 0; i < meetings.length; i++) {
         var mtg = meetings[i];
@@ -70,7 +70,7 @@ function createMeetingsTable(meetings) {
         table = table + row;
     }
 
-    table = table + "</table>";
+    table = table + "</tbody></table>";
 
     tableDiv.html(table);
 
@@ -85,9 +85,7 @@ jQuery(document).ready(function () {
 
         e.preventDefault();
 
-        var auth = $("#auth-input").val();
-
-        getAllMeetings(auth, function (res) {
+        getAllMeetings($("#auth-input").val(), function (res) {
             if (res["meetings"]) {
                 createMeetingsTable(res["meetings"]);
             } else {
@@ -96,7 +94,7 @@ jQuery(document).ready(function () {
         });
 
         $("#refresh-meetings").on('click', function () {
-            getAllMeetings(auth, function (res) {
+            getAllMeetings($("#auth-input").val(), function (res) {
                 if (res["meetings"]) {
                     createMeetingsTable(res["meetings"]);
                 } else {
