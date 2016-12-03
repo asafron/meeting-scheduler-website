@@ -202,4 +202,15 @@ only screen and (                min-resolution: 2dppx) {
 
 #datepicker {
 	margin-bottom: 20px;
+	color: white;
+}
+
+.meetings-table-content {
+	color: black;
+}
+
+@media print {
+	.noprint {
+		display: none;
+	}
 }
