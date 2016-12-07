@@ -8,6 +8,7 @@ var user_details = {
     email: "",
     phone: "",
     school: "",
+    id_number: "",
     day: 0,
     month: 0,
     year: 0,
@@ -58,7 +59,8 @@ function scheduleMeeting(callback) {
             name: user_details.name,
             email: user_details.email,
             phone: user_details.phone,
-            school: user_details.school
+            school: user_details.school,
+            id_number: user_details.id_number
         }),
         success: function (res) {
             callback(res);
@@ -143,6 +145,10 @@ function validateSchool(school) {
     return school.length > 0;
 }
 
+function validateIdNumber(idNumber) {
+    return idNumber.length > 0;
+}
+
 jQuery(document).ready(function () {
 
     /*
@@ -150,7 +156,7 @@ jQuery(document).ready(function () {
      */
     $('.f1 fieldset:first').fadeIn('slow');
 
-    $('.f1 input[type="text"], .f1 input[type="tel"], .f1 input[type="email"]').on('focus', function () {
+    $('.f1 input[type="text"], .f1 input[type="tel"], .f1 input[type="email"], .f1 input[type="number"]').on('focus', function () {
         $(this).removeClass('input-error');
     });
 
@@ -163,7 +169,7 @@ jQuery(document).ready(function () {
         var progress_line = $(this).parents('.f1').find('.f1-progress-line');
 
         // fields validation
-        parent_fieldset.find('input[type="text"], input[type="email"], input[type="tel"]').each(function () {
+        parent_fieldset.find('input[type="text"], input[type="email"], input[type="tel"], input[type="number"]').each(function () {
             if ($(this).val() == "") {
                 $(this).addClass('input-error');
                 next_step = false;
@@ -175,6 +181,10 @@ jQuery(document).ready(function () {
 
         if (!validateName($("#f1-full-name").val())) {
             $("#f1-full-name").addClass('input-error');
+            return;
+        }
+        if (!validateIdNumber($("#f1-id-number").val())) {
+            $("#f1-id-number").addClass('input-error');
             return;
         }
         if (!validateEmail($("#f1-email").val())) {
@@ -195,11 +205,13 @@ jQuery(document).ready(function () {
             var current_step_id = $(current_active_step).attr("id");
             if (current_step_id === "f1-step-1") {
                 user_details.name = $("#f1-full-name").val();
+                user_details.id_number = $("#f1-id-number").val();
                 user_details.email = $("#f1-email").val();
                 user_details.phone = $("#f1-phone").val();
                 user_details.school = $("#f1-school").val();
             } else if (current_step_id === "f1-step-2") {
                 $("#confirm-name").text(user_details.name);
+                $("#confirm-id-number").text(user_details.id_number);
                 $("#confirm-email").text(user_details.email);
                 $("#confirm-phone").text(user_details.phone);
                 $("#confirm-school").text(user_details.school);
@@ -249,7 +261,7 @@ jQuery(document).ready(function () {
         e.preventDefault();
 
         // fields validation
-        $(this).find('input[type="text"], input[type="tel"], input[type="email"], textarea').each(function () {
+        $(this).find('input[type="text"], input[type="tel"], input[type="email"], input[type="number"], textarea').each(function () {
             if ($(this).val() == "") {
                 e.preventDefault();
                 $(this).addClass('input-error');
@@ -271,7 +283,12 @@ jQuery(document).ready(function () {
                 $("#main-form").hide();
                 $("#thank-you").show();
             } else {
-                alert(res["message"]);
+                var errorMsg = res["message"];
+                if (errorMsg === "a meeting with the following id number already exists") {
+                    alert("לא ניתן לקבוע שתי פגישות לאותו התלמיד. אם ברצונכם לשנות את מועד הפגישה, יש תחילה לבטל את הרישום לפגישה המקורית, באמצעות הקישור המופיע במייל האישור שקיבלתם.");
+                } else {
+                    alert(errorMsg);
+                }
             }
         });
     });
