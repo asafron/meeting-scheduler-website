@@ -45,6 +45,7 @@ function createMeetingsTable(meetings) {
         "<td class='meetings-table-content'>תאריך</td>" +
         "<td class='meetings-table-content'>שעה</td>" +
         "<td class='meetings-table-content'>שם</td>" +
+        "<td class='meetings-table-content'>ת.ז</td>" +
         "<td class='meetings-table-content'>דואר אלקטרוני</td>" +
         "<td class='meetings-table-content'>טלפון</td>" +
         "<td class='meetings-table-content'>בית ספר יסודי</td>" +
@@ -62,6 +63,7 @@ function createMeetingsTable(meetings) {
             "<td class='meetings-table-content'>" + mtg.day + "-" + mtg.month + "-" + mtg.year + "</td>" +
             "<td class='meetings-table-content'>" + minutesToString(mtg.start_time) + "</td>" +
             "<td class='meetings-table-content'>" + mtg.user_name + "</td>" +
+            "<td class='meetings-table-content'>" + mtg.user_id_number + "</td>" +
             "<td class='meetings-table-content'>" + mtg.user_email + "</td>" +
             "<td class='meetings-table-content'>" + mtg.user_phone + "</td>" +
             "<td class='meetings-table-content'>" + mtg.user_school + "</td>" +
