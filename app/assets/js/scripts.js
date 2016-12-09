@@ -1,4 +1,4 @@
-var DEBUG = false;
+var DEBUG = true;
 var API_Base_URL = DEBUG ? "http://localhost:4000" : "http://35.156.9.219";
 
 var allMeetings = [];
@@ -9,6 +9,7 @@ var user_details = {
     phone: "",
     school: "",
     id_number: "",
+    preferred_school_day: "לא משנה לי",
     day: 0,
     month: 0,
     year: 0,
@@ -60,7 +61,8 @@ function scheduleMeeting(callback) {
             email: user_details.email,
             phone: user_details.phone,
             school: user_details.school,
-            id_number: user_details.id_number
+            id_number: user_details.id_number,
+            preferred_school_day: user_details.preferred_school_day
         }),
         success: function (res) {
             callback(res);
@@ -310,6 +312,12 @@ jQuery(document).ready(function () {
             user_details.start_time = parseInt($(this).attr("data-start-time"));
             user_details.end_time = user_details.start_time + 10;
         }
+    });
+
+    $(".preferred-day-option").on('click', function () {
+        var preferredDayStr = $(this).text();
+        $("#preferred-day-button").text(preferredDayStr);
+        user_details.preferred_school_day = preferredDayStr;
     });
 
     // disable enter for form
