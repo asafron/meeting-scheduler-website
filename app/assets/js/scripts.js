@@ -278,7 +278,10 @@ jQuery(document).ready(function () {
         }
         // fields validation
 
+        $(".loading").show();
+
         scheduleMeeting(function (res) {
+            $(".loading").hide();
             if (res["success"] === true) {
                 $("#main-form").hide();
                 $("#thank-you").show();
@@ -308,6 +311,14 @@ jQuery(document).ready(function () {
             user_details.end_time = user_details.start_time + 10;
         }
     });
+
+    // disable enter for form
+    $(document).keypress(
+        function (event) {
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        });
 
     // initialization
     getAvailableMeetingsTime(function (res) {
@@ -357,14 +368,7 @@ jQuery(document).ready(function () {
         user_details.day = allAvailableDates[0].getDate();
         user_details.month = allAvailableDates[0].getMonth() + 1;
         user_details.year = allAvailableDates[0].getFullYear();
+
+        $(".loading").hide();
     });
-
-    // disable enter for form
-    $(document).keypress(
-        function (event) {
-            if (event.which == '13') {
-                event.preventDefault();
-            }
-        });
-
 });
