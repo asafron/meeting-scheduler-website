@@ -49,6 +49,7 @@ function createMeetingsTable(meetings) {
         "<td class='meetings-table-content'>דואר אלקטרוני</td>" +
         "<td class='meetings-table-content'>טלפון</td>" +
         "<td class='meetings-table-content'>בית ספר יסודי</td>" +
+        "<td class='meetings-table-content'>יום מועדף</td>" +
         "<td class='meetings-table-content'>זמן עדכון אחרון</td>" +
         "</tr></thead><tbody>";
 
@@ -67,6 +68,7 @@ function createMeetingsTable(meetings) {
             "<td class='meetings-table-content'>" + mtg.user_email + "</td>" +
             "<td class='meetings-table-content'>" + mtg.user_phone + "</td>" +
             "<td class='meetings-table-content'>" + mtg.user_school + "</td>" +
+            "<td class='meetings-table-content'>" + mtg.user_preferred_school_day + "</td>" +
             "<td class='meetings-table-content'>" + meetingStringToReadable(mtg.updated_at) + "</td>" +
             "</tr>";
         table = table + row;
