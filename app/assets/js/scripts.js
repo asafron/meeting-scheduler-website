@@ -331,51 +331,56 @@ jQuery(document).ready(function () {
     // initialization
     getAvailableMeetingsTime(function (res) {
         allMeetings = res["meetings"];
-        var allAvailableDates = [];
-        for (var i = 0; i < allMeetings.length; i++) {
-            var mtg = allMeetings[i];
-            var mtgDate = new Date(mtg["year"], mtg["month"] - 1, mtg["day"]);
-            if ($.inArray(mtgDate, allAvailableDates) > -1) {
-                continue;
-            } else {
-                allAvailableDates.push(mtgDate);
-            }
-        }
-
-        // date picker
-        var dpOpts = {
-            numberOfMonths: 1,
-            beforeShowDay: function (date) {
-                var dayAvailable = false;
-                for (var j = 0; j < allAvailableDates.length; j++) {
-                    if (date >= allAvailableDates[j] && date <= allAvailableDates[j]) {
-                        dayAvailable = true;
-                        break;
-                    }
+        if (allMeetings.length === 0) {
+            $(".top-content").hide();
+            $("#no-dates").show();
+        } else {
+            var allAvailableDates = [];
+            for (var i = 0; i < allMeetings.length; i++) {
+                var mtg = allMeetings[i];
+                var mtgDate = new Date(mtg["year"], mtg["month"] - 1, mtg["day"]);
+                if ($.inArray(mtgDate, allAvailableDates) > -1) {
+                    continue;
+                } else {
+                    allAvailableDates.push(mtgDate);
                 }
-                return [dayAvailable, ''];
-            },
-            defaultDate: allAvailableDates[0],
-            onSelect: function (dateText, inst) {
-                var date = $(this).datepicker('getDate'),
-                    day = date.getDate(),
-                    month = date.getMonth(),
-                    year = date.getFullYear();
-
-                user_details.day = day;
-                user_details.month = month + 1;
-                user_details.year = year;
-
-                displayAvailableHours(new Date(year, month, day));
             }
-        };
-        $("#datepicker").datepicker(dpOpts);
 
-        displayAvailableHours(allAvailableDates[0]);
+            // date picker
+            var dpOpts = {
+                numberOfMonths: 1,
+                beforeShowDay: function (date) {
+                    var dayAvailable = false;
+                    for (var j = 0; j < allAvailableDates.length; j++) {
+                        if (date >= allAvailableDates[j] && date <= allAvailableDates[j]) {
+                            dayAvailable = true;
+                            break;
+                        }
+                    }
+                    return [dayAvailable, ''];
+                },
+                defaultDate: allAvailableDates[0],
+                onSelect: function (dateText, inst) {
+                    var date = $(this).datepicker('getDate'),
+                        day = date.getDate(),
+                        month = date.getMonth(),
+                        year = date.getFullYear();
 
-        user_details.day = allAvailableDates[0].getDate();
-        user_details.month = allAvailableDates[0].getMonth() + 1;
-        user_details.year = allAvailableDates[0].getFullYear();
+                    user_details.day = day;
+                    user_details.month = month + 1;
+                    user_details.year = year;
+
+                    displayAvailableHours(new Date(year, month, day));
+                }
+            };
+            $("#datepicker").datepicker(dpOpts);
+
+            displayAvailableHours(allAvailableDates[0]);
+
+            user_details.day = allAvailableDates[0].getDate();
+            user_details.month = allAvailableDates[0].getMonth() + 1;
+            user_details.year = allAvailableDates[0].getFullYear();
+        }
 
         $(".loading").hide();
     });
