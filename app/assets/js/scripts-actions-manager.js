@@ -35,7 +35,7 @@ function meetingStringToReadable(dateString) {
     return str;
 }
 
-function createMeetingsTable(meetings) {
+function createMeetingsTable(meetings, repsFilter) {
     var tableDiv = $("#meetings-details");
     tableDiv.empty();
 
@@ -59,6 +59,13 @@ function createMeetingsTable(meetings) {
         if (mtg.user_name.length > 0) {
             classString = "class='danger'";
         }
+
+        if (repsFilter !== "all") {
+            if (mtg.representative !== repsFilter) {
+                continue;
+            }
+        }
+
         var row = "<tr " + classString + ">" +
             "<td class='meetings-table-content'>" + mtg.representative + "</td>" +
             "<td class='meetings-table-content'>" + mtg.day + "-" + mtg.month + "-" + mtg.year + "</td>" +
@@ -82,6 +89,33 @@ function createMeetingsTable(meetings) {
     $("#meetings-outer").show();
 }
 
+function refreshTable() {
+    getAllMeetings($("#auth-input").val(), function (res) {
+        window.ms_admin_mtgs = res["meetings"];
+        window.ms_admin_representatives = [];
+        if (window.ms_admin_mtgs) {
+            createMeetingsTable(window.ms_admin_mtgs, "all");
+
+            for (var i = 0; i < window.ms_admin_mtgs.length; i++) {
+                var mtg = window.ms_admin_mtgs[i];
+                if (window.ms_admin_representatives.indexOf(mtg.representative) === -1) {
+                    window.ms_admin_representatives.push(mtg.representative);
+                }
+            }
+
+            $("#reps-drop-down").empty();
+            var lines = "<li><a class='reps-option' data-reps='-1'>כולם</a></li>";
+            for (var i = 0; i < window.ms_admin_representatives.length; i++) {
+                lines += "<li><a class='reps-option' data-reps='" + i + "'>" + window.ms_admin_representatives[i] + "</a></li>"
+            }
+            $("#reps-drop-down").html(lines);
+
+        } else {
+            alert(res["message"]);
+        }
+    });
+}
+
 jQuery(document).ready(function () {
 
     // submit
@@ -89,26 +123,32 @@ jQuery(document).ready(function () {
 
         e.preventDefault();
 
-        getAllMeetings($("#auth-input").val(), function (res) {
-            if (res["meetings"]) {
-                createMeetingsTable(res["meetings"]);
-            } else {
-                alert(res["message"]);
-            }
-        });
+        window.ms_admin_mtgs = [];
+        window.ms_admin_representatives = [];
+
+        refreshTable();
 
         $("#refresh-meetings").on('click', function () {
-            getAllMeetings($("#auth-input").val(), function (res) {
-                if (res["meetings"]) {
-                    createMeetingsTable(res["meetings"]);
-                } else {
-                    alert(res["message"]);
-                }
-            });
+            refreshTable();
         });
 
         $("#print-meetings").on('click', function () {
             window.print();
+        });
+
+        $("#reps-drop-down").on('click', '.reps-option', function () {
+            var pos = parseInt($(this).attr("data-reps"));
+            var rep = "all";
+            if (pos !== -1) {
+                rep = window.ms_admin_representatives[pos];
+            }
+            createMeetingsTable(window.ms_admin_mtgs, rep);
+
+            var buttonText = "סנן לפי מראיין <span class='caret'></span>";
+            if (rep !== "all") {
+                buttonText = rep;
+            }
+            $("#reps-drop-down-button").html(buttonText);
         });
 
     });

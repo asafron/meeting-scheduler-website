@@ -37,6 +37,13 @@
         </div>
         <div style="display: none" id="meetings-outer">
             <h1>ראיונות מופת - סטטוס נוכחי</h1>
+            <div class="dropdown" style="display: inline;">
+                <button id="reps-drop-down-button" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">סנן לפי מראיין
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu" id="reps-drop-down">
+                    <li><a class="reps-option" data-reps="-1">כולם</a></li>
+                </ul>
+            </div>
             <button id="refresh-meetings" class="btn btn-primary noprint" style="margin: 10px;"><span class="glyphicon glyphicon-refresh"></span> רענן</button>
             <button id="print-meetings" class="btn btn-success noprint" style="margin: 10px;"><span class="glyphicon glyphicon-print"></span> הדפס</button>
             <div id="meetings-details">
