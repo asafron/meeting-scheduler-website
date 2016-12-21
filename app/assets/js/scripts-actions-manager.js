@@ -91,7 +91,17 @@ function createMeetingsTable(meetings, repsFilter) {
 
 function refreshTable() {
     getAllMeetings($("#auth-input").val(), function (res) {
-        window.ms_admin_mtgs = res["meetings"];
+        window.ms_admin_mtgs = res["meetings"].slice();
+        window.ms_admin_mtgs_by_name = res["meetings"].slice();
+        window.ms_admin_mtgs_by_name.sort(function(a, b){
+            var keyA = a.user_name.replace(" ", ""),
+                keyB = b.user_name.replace(" ", "");
+            // Compare the 2 dates
+            if(keyA < keyB) return -1;
+            if(keyA > keyB) return 1;
+            return 0;
+        });
+
         window.ms_admin_representatives = [];
         if (window.ms_admin_mtgs) {
             createMeetingsTable(window.ms_admin_mtgs, "all");
@@ -124,7 +134,10 @@ jQuery(document).ready(function () {
         e.preventDefault();
 
         window.ms_admin_mtgs = [];
+        window.ms_admin_mtgs_by_name = [];
         window.ms_admin_representatives = [];
+        window.ms_admin_current_rep = "all";
+        window.order = "time";
 
         refreshTable();
 
@@ -136,12 +149,27 @@ jQuery(document).ready(function () {
             window.print();
         });
 
+        $("#order-meetings").on('click', function () {
+            if (window.order === "time") {
+                window.order = "name";
+                createMeetingsTable(window.ms_admin_mtgs_by_name, window.ms_admin_current_rep);
+                $("#order-meetings").html("<span class='glyphicon glyphicon-sort-by-order'></span> סדר לפי זמן");
+            } else {
+                window.order = "time";
+                createMeetingsTable(window.ms_admin_mtgs, window.ms_admin_current_rep);
+                $("#order-meetings").html("<span class='glyphicon glyphicon-sort-by-order'></span> סדר לפי א-ב");
+            }
+        });
+
+        //<span class='glyphicon glyphicon-sort-by-order'></span> סדר לפי זמן
+
         $("#reps-drop-down").on('click', '.reps-option', function () {
             var pos = parseInt($(this).attr("data-reps"));
             var rep = "all";
             if (pos !== -1) {
                 rep = window.ms_admin_representatives[pos];
             }
+            window.ms_admin_current_rep = rep;
             createMeetingsTable(window.ms_admin_mtgs, rep);
 
             var buttonText = "סנן לפי מראיין <span class='caret'></span>";
